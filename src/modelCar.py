@@ -14,6 +14,15 @@ import matplotlib.pyplot as plt
 """
 This tool will model the car moving through a hoistway using data collected from Vanderbilt.
 FUTURE: use for test tower, batch processing.
+Algorithm: 
+1. Read in data from csv into pandas dataframe
+2. Clean data from bad outliers
+3. Shift data in y-direction in case of noise 
+4. Separate data in chunks to lower integration error
+5. Integrate each chunk
+6. Append the integration results into one series/array
+7. Plot the results
+
 """
 
 # used for ssh
@@ -31,11 +40,17 @@ def getCSV():
 # integrate to get velocity, then position
 def integ(data):
     data_int = data.copy()
+    result = np.array([])
     #time = np.linspace(0, data_int.size, data_int.size)
-    for i in range(1, data_int.size, 1000)
+    for i in range(1, data_int.size, 1000):
+        chunk_size = 1000
+        if i+chunk_size >= data_int.size:
+            chunk_size = data_int.size - i
+        chunk_int = integrate.cumtrapz(data_int[i:i+chunk_size])
+        result = np.append(result, chunk_int)
+        
     data_int = integrate.cumtrapz(data_int, initial=0)
-    print("used dx = 2")
-    return data_int
+    return result, data_int
 
 def cleanData(csvfile):
     print("Cleaning {} now".format(csvfile))
@@ -96,12 +111,15 @@ def hpf(df):
 # plot data
 def plotData(data):
 
-    time = np.linspace(0, data[0].size, data[0].size)
+    time_0 = np.linspace(0, data[0].size, data[0].size)
+    time_1 = np.linspace(0, data[1].size, data[1].size)
+    time_2 = np.linspace(0, data[2].size, data[2].size)
+
     figs, axs = plt.subplots(3)
     figs.suptitle('Vanderbilt Z-Acceleration Integration')
-    axs[0].plot(time, data[0], 'b')
-    axs[1].plot(time, data[1], 'g')
-    axs[2].plot(time, data[2], 'r')
+    axs[0].plot(time_0, data[0], 'b')
+    axs[1].plot(time_1, data[1], 'g')
+    axs[2].plot(time_2, data[2], 'r')
 
     axs[0].title.set_text('Z-Accel')
     axs[1].title.set_text('Velocity')
@@ -124,11 +142,17 @@ if __name__=="__main__":
     print("Finished cleaning data")
     accel = df['zaccel']
     print("Integrating for velocity")
-    vel = integ(accel)
+    vel_chunked, vel = integ(accel)
     print("Integrating for position")
-    pos = integ(vel)
-    print("Plotting")
-    plotData([accel, vel, pos])
+    pos_chunked_regvel, pos_regvel = integ(vel)
+    pos_chunked_chunkedvel, pos_chunkedvel = integ(vel_chunked)
+    print("Plotting chunked position with no chunked velocity")
+    plotData([accel, vel, pos_chunked_regvel])
+    print("Plotting chunked position with chunked vel")
+    plotData([accel, vel_chunked, pos_chunked_chunkedvel])
+    print("Plotting unchunked pos, unchunked vel")
+    plotData([accel, vel, pos_regvel])
+
     #print("Computing FFT")
     #fft_df(df)
     
