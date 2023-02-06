@@ -42,8 +42,8 @@ def integ(data):
     data_int = data.copy()
     result = np.array([])
     #time = np.linspace(0, data_int.size, data_int.size)
-    for i in range(1, data_int.size, 1000):
-        chunk_size = 1000
+    for i in range(1, data_int.size, 100):
+        chunk_size = 100
         if i+chunk_size >= data_int.size:
             chunk_size = data_int.size - i
         chunk_int = integrate.cumtrapz(data_int[i:i+chunk_size])
@@ -71,6 +71,8 @@ def cleanData(csvfile):
 
         # take avg of accel data during off-peak to remove noise offset
         data['zaccel'] = data['zaccel'] - data['zaccel'][10000:70000].mean()
+        data['xaccel'] = data['xaccel'] - data['xaccel'][10000:70000].mean()
+        data['yaccel'] = data['yaccel'] - data['yaccel'][10000:70000].mean()
 
         return data
     except ValueError as ex:
@@ -108,6 +110,22 @@ def hpf(df):
     fs = 2 #Hz
     #fp = 
 
+def chooseAxis(x,y,z):
+    avg_x = x.nlargest().mean()
+    avg_y = y.nlargest().mean()
+    avg_z = z.nlargest().mean()
+    print("Avg x: ", avg_x)
+    print("Avg y: ", avg_y)
+    print("Avg z: ", avg_z)
+    if avg_z >= avg_x and avg_z >= avg_y:
+        return z
+    if avg_y >= avg_x and avg_y >= avg_z:
+        return y
+    if avg_x >= avg_y and avg_x >= avg_z:
+        return x
+    
+    
+
 # plot data
 def plotData(data):
 
@@ -131,6 +149,26 @@ def plotData(data):
 
     plt.show()
 
+def plotAccels(data):
+
+    time = np.linspace(0, data[0].size, data[0].size)
+
+    figs, axs = plt.subplots(3)
+    figs.suptitle('Vanderbilt Acceleration Axes')
+    axs[0].plot(time, data[0], 'b')
+    axs[1].plot(time, data[1], 'g')
+    axs[2].plot(time, data[2], 'r')
+
+    axs[0].title.set_text('X-Accel')
+    axs[1].title.set_text('Y-Accel')
+    axs[2].title.set_text('Z-Accel')
+
+    #axs[0].set_ylim([-2, 2])
+   # axs[1].set_ylim([-10, 10])
+    plt.autoscale(enable=True, axis='y')
+
+    plt.show()
+    
 # display position change over time using graphic
 # add vector to graphic with fixed positions for KSE, KNE, PHS, etc.
 
@@ -140,12 +178,25 @@ if __name__=="__main__":
     datafiles = getCSV()
     df = cleanData(datafiles[0])
     print("Finished cleaning data")
-    accel = df['zaccel']
+    
+    print("Plotting all 3 acceleration axes")
+    x_accel = df['xaccel']
+    y_accel = df['yaccel']
+    z_accel = df['zaccel']
+    plotAccels([x_accel, y_accel, z_accel])
+    
+    # given 3 pd Series, return the axis with the highest average
+    # CHOOSE ACCEL AXIS WITH LARGEST AVERAGE
+    accel = chooseAxis(x_accel, y_accel, z_accel)
+    
+    
     print("Integrating for velocity")
     vel_chunked, vel = integ(accel)
+    
     print("Integrating for position")
     pos_chunked_regvel, pos_regvel = integ(vel)
     pos_chunked_chunkedvel, pos_chunkedvel = integ(vel_chunked)
+    
     print("Plotting chunked position with no chunked velocity")
     plotData([accel, vel, pos_chunked_regvel])
     print("Plotting chunked position with chunked vel")
