@@ -20,12 +20,12 @@ def plotData(data):
     axs[1].plot(time_1, data[1], 'g')
     axs[2].plot(time_2, data[2], 'r')
 
-    axs[0].title.set_text('Z-Accel')
+    axs[0].title.set_text('Accel')
     axs[1].title.set_text('Velocity')
     axs[2].title.set_text('Position')
 
     #axs[0].set_ylim([-2, 2])
-   # axs[1].set_ylim([-10, 10])
+    #axs[1].set_ylim([-10, 10])
     plt.autoscale(enable=True, axis='y')
 
     plt.show()

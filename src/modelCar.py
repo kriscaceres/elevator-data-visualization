@@ -72,8 +72,8 @@ if __name__=="__main__":
     z_accel = df['zaccel']
     #plotAccels([x_accel, y_accel, z_accel])
 
-    filteredData = lpf(y_accel)
-    plotFiltVsUnfilt(y_accel, filteredData)
+    #filteredData = lpf(y_accel)
+    #plotFiltVsUnfilt(y_accel, filteredData)
     #plot3DVector(x_accel[80000:85000], y_accel[80000:85000], z_accel[80000:85000])
 
 
@@ -88,6 +88,8 @@ if __name__=="__main__":
     
     print("Plotting...")
     plotData([accel, velocity, position])
+
+    # Normalize car speed to be about 9m/s at full velocity
 
     
 

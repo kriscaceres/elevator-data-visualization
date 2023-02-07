@@ -18,8 +18,8 @@ def integ(data):
         #data_int = data.copy()
         result = np.array([])
         #time = np.linspace(0, data.size, data.size)
-        for i in range(1, data.size, 100):
-            chunk_size = 100
+        for i in range(1, data.size, 50):
+            chunk_size = 50
             if i+chunk_size >= data.size:
                 chunk_size = data.size - i
             chunk_int = integrate.cumtrapz(data[i:i+chunk_size])
@@ -91,11 +91,10 @@ def lpf(data):
     fs = 2 #Hz, Sample frequency
     cutoff = 0.8
     nyq = 0.5 * fs
-    order = 3
+    order = 2
     
     # butter lpf
     normal_cutoff = cutoff / nyq
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
     y = filtfilt(b, a, data)
     return y
-    #fp = 
