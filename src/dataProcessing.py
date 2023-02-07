@@ -89,16 +89,13 @@ def lpf(data):
     # highest sampling rate is 0.5s or 2Hz
     # lpf with 2Hz
     fs = 2 #Hz, Sample frequency
-    T = 86400 # Sample period
-    total_samples = len(data)
-    cutoff = 1
+    cutoff = 0.8
     nyq = 0.5 * fs
-    order = 2
-    n = int(T*fs)
+    order = 3
     
     # butter lpf
     normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=True)
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
     y = filtfilt(b, a, data)
     return y
     #fp = 

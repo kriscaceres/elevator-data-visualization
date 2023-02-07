@@ -70,8 +70,10 @@ if __name__=="__main__":
     x_accel = df['xaccel']
     y_accel = df['yaccel']
     z_accel = df['zaccel']
-    plotAccels([x_accel, y_accel, z_accel])
+    #plotAccels([x_accel, y_accel, z_accel])
 
+    filteredData = lpf(y_accel)
+    plotFiltVsUnfilt(y_accel, filteredData)
     #plot3DVector(x_accel[80000:85000], y_accel[80000:85000], z_accel[80000:85000])
 
 
@@ -87,7 +89,6 @@ if __name__=="__main__":
     print("Plotting...")
     plotData([accel, velocity, position])
 
-    filteredData = lpf(y_accel)
-    plotFiltVsUnfilt(y_accel, filteredData)
+    
 
     

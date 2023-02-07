@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import plotly.express as px
 import plotly.graph_objects as go
 
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
 
 # plot data
 def plotData(data):
@@ -51,19 +51,15 @@ def plotAccels(data):
     plt.show()
 
 def plotFiltVsUnfilt(unfilt, filt):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        y=unfilt,
-        line = dict(shape = 'spline'),
-        name = 'signal with noise'
-    ))
+    figs, axs = plt.subplots(2, sharex=True, sharey=True)
 
-    fig.add_trace(go.Scatter(
-        y=filt,
-        line = dict(shape='spline'),
-        name = 'filtered signal'
-    ))
-    fig.show()
+    axs[0].plot(unfilt, color='b', label='Unfiltered data')
+    axs[1].plot(filt, color='r', label='Filtered data')
+    plt.xlabel("Samples")
+    plt.ylabel("m/s/s")
+    plt.title("Unfiltered vs filtered acceleration signal")
+    plt.show()
+
 
 def plot3DVector(x,y,z):
     fig = plt.figure()
