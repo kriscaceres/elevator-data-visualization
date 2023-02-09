@@ -14,22 +14,26 @@ import matplotlib.pyplot as plt
 # integrate to get velocity, then position
 def integ(data):
     print("Integrating data...")
+    data_int = data.copy()
+    return integrate.cumtrapz(data_int, dx=1.0/10000.0, initial=0)
+    '''
     try:
-        #data_int = data.copy()
         result = np.array([])
         #time = np.linspace(0, data.size, data.size)
-        for i in range(1, data.size, 50):
-            chunk_size = 50
+        for i in range(1, data.size, 100):
+            chunk_size = 100
             if i+chunk_size >= data.size:
                 chunk_size = data.size - i
             chunk_int = integrate.cumtrapz(data[i:i+chunk_size])
             result = np.append(result, chunk_int)
             
-        #data_int = integrate.cumtrapz(data_int, initial=0)
+        data_int = integrate.cumtrapz(data_int, initial=0)
         print("Integration successful.")
-        return result #, data_int
+        return data_int#result #, data_int
     except Exception as ex:
         print("Issue with integration: \n", ex)
+    '''
+    
 
 def cleanData(csvfile):
     print("Cleaning {} now...".format(csvfile))

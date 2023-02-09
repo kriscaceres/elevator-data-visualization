@@ -1,17 +1,19 @@
-from scipy import integrate
+import glob  # unix style pathname pattern expansion
+import os
+
+import matplotlib
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib import animation
+from scipy import integrate, signal
 from scipy.fft import fft, fftfreq
 from scipy.signal import blackman
-from scipy import signal
 from sklearn.preprocessing import MinMaxScaler
-from plotUtil import plotAccels, plotData, plot3DVector, plotFiltVsUnfilt
+
+import plotUtil
 from dataProcessing import cleanData, integ, lpf
-import pandas as pd
-import math
-import os
-import glob # unix style pathname pattern expansion
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
 
 """
 This tool will model the car moving through a hoistway using data collected from Vanderbilt.
@@ -35,7 +37,7 @@ def getCSV():
     extension = 'csv'
     os.chdir(path)
     result = glob.glob('*.{}'.format(extension)) # list of files, CWD = data/
-    return result
+    return 
 
 def chooseAxis(x,y,z):
     avg_x = x.nlargest().mean()
@@ -51,46 +53,40 @@ def chooseAxis(x,y,z):
     if avg_x >= avg_y and avg_x >= avg_z:
         return x
       
-# display position change over time using graphic
 # add vector to graphic with fixed positions for KSE, KNE, PHS, etc.
 
 
-if __name__=="__main__":
+#if __name__=="__main__":
 
-    # get data
-    datafiles = getCSV()
-    
-    # remove bad data and reformat index
-    df = cleanData(datafiles[0])
-    
-    # TODO: Create a vector with x-y-z axes and map to new coordinate frame that matches hoistway
+# get data
+#datafiles = getCSV()
 
-    # Confirm which axis aligns with hoistway (mechanics may shift box around as they work)
-    print("Plotting all 3 acceleration axes")
-    x_accel = df['xaccel']
-    y_accel = df['yaccel']
-    z_accel = df['zaccel']
-    #plotAccels([x_accel, y_accel, z_accel])
+# csvfile
+csvfile = 'az_102mps_poweroff.csv'
+csvlocation = os.path.join('data', csvfile)
 
-    #filteredData = lpf(y_accel)
-    #plotFiltVsUnfilt(y_accel, filteredData)
-    #plot3DVector(x_accel[80000:85000], y_accel[80000:85000], z_accel[80000:85000])
+df = pd.read_csv(csvlocation)
+print(df)
+# remove bad data and reformat index
+#df = cleanData(datafiles[0])
+#df = cleanData()
 
+#x_accel = df['xaccel']
+#y_accel = df['yaccel']
+z_accel = df['zaccel']
 
-    
-    # given 3 pd Series, return the axis with the highest average
-    # CHOOSE ACCEL AXIS WITH LARGEST AVERAGE
+# given 3 pd Series, return the axis with the highest average
+# CHOOSE ACCEL AXIS WITH LARGEST AVERAGE
 
-    accel = chooseAxis(x_accel, y_accel, z_accel)
+#accel = chooseAxis(x_accel, y_accel, z_accel)
+accel = z_accel
+velocity = integ(accel - accel.mean())
+position = integ(velocity)
 
-    velocity = integ(accel)
-    position = integ(velocity)
-    
-    print("Plotting...")
-    plotData([accel, velocity, position])
+plotUtil.movingCar(position)
 
-    # Normalize car speed to be about 9m/s at full velocity
-
+print("Plotting...")
+plotUtil.plotData([accel, velocity, position])
     
 
     

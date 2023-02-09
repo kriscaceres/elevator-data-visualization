@@ -1,11 +1,17 @@
-import numpy as np
+
+import time
 import matplotlib
+import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import plotly.express as px
 import plotly.graph_objects as go
+import matplotlib.patches as patches
 
-#matplotlib.use('TkAgg')
+from math import floor
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import animation
+
+matplotlib.use('TkAgg')
 
 # plot data
 def plotData(data):
@@ -14,7 +20,7 @@ def plotData(data):
     time_1 = np.linspace(0, data[1].size, data[1].size)
     time_2 = np.linspace(0, data[2].size, data[2].size)
 
-    figs, axs = plt.subplots(3)
+    figs, axs = plt.subplots(3, sharex=True)
     figs.suptitle('Vanderbilt Acceleration Integration')
     axs[0].plot(time_0, data[0], 'b')
     axs[1].plot(time_1, data[1], 'g')
@@ -60,17 +66,84 @@ def plotFiltVsUnfilt(unfilt, filt):
     plt.title("Unfiltered vs filtered acceleration signal")
     plt.show()
 
-
 def plot3DVector(x,y,z):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     
-    ax.plot3D(x,y,z, 'red')
-    ax.scatter3D(x,y,z, c=z, cmap='cividis')
+    ax.plot(x,y,z, 'red')
+    #ax.scatter3D(x,y,z, c=z, cmap='cividis')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     #ax.set_zlabel('z')
     plt.show()
 
+def plotCont(position):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    
+    x= np.array([0])
+    y= np.array([0])
+    li, = ax.plot(x, y, 'r-')
+    fig.canvas.draw()
+    plt.show(block=False)
+    plt.ion()
+    for i in range(position.size):
+        try:
+            print("X: {}\nPosition: {}".format(i, position[i]))
+            x = np.append(x, i)
+            y = np.append(y, position[i])
+            
+            if i >= 100:
+                x = np.delete(x, 0)
+                y = np.delete(y, 0)
+            
+            # set the new data
+            li.set_xdata(x)
+            li.set_ydata(y)
+
+            ax.relim()
+            ax.autoscale_view(True, True, True)
+            fig.canvas.draw()
+            plt.pause(0.05)
+        except KeyboardInterrupt:
+            plt.close('all')
+            break
+
+
+def movingCar(position):
+    x = np.linspace(2,2,position.size)
+    y = position
+    yaw = np.zeros(y.size)
+
+    fig = plt.figure()
+    plt.axis('equal')
+    ax = fig.add_subplot(111)
+    ax.set_xlim(1.5, 5.5)
+    ax.set_ylim(0, 5)
+    #ax.autoscale_view(True, True, True)
+    #ax.set_ylim(-4, 4)
+
+    patch = patches.Rectangle((0,0), 0, 0, fc='y')
+
+    def init():
+        ax.add_patch(patch)
+        return patch,
+
+    def animate(i):
+        patch.set_width(1.5)
+        patch.set_height(2)
+        patch.set_xy([x[i], y[i]])
+        #print([x[i], y[i]])
+        patch._angle = -np.rad2deg(yaw[i])
+        return patch,
+
+    anim = animation.FuncAnimation(fig, animate,
+                                    init_func=init,
+                                    frames=range(0, position.size, 2),
+                                    interval=1,
+                                    blit=True)
+    #anim.save('car_moving.mp4', fps=30)
+    plt.grid(True)
+    plt.show()
 # display position change over time using graphic
 # add vector to graphic with fixed positions for KSE, KNE, PHS, etc.
