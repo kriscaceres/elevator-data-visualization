@@ -118,8 +118,8 @@ def movingCar(position):
     fig = plt.figure()
     plt.axis('equal')
     ax = fig.add_subplot(111)
-    ax.set_xlim(1.5, 5.5)
-    ax.set_ylim(0, 5)
+    ax.set_xlim(1.5, 4.5)
+    ax.set_ylim(-2, 3)
     #ax.autoscale_view(True, True, True)
     #ax.set_ylim(-4, 4)
 
@@ -140,9 +140,9 @@ def movingCar(position):
     anim = animation.FuncAnimation(fig, animate,
                                     init_func=init,
                                     frames=range(0, position.size, 2),
-                                    interval=1,
+                                    interval=0.001,
                                     blit=True)
-    #anim.save('car_moving.mp4', fps=30)
+    anim.save('car_moving.mp4', fps=120)
     plt.grid(True)
     plt.show()
 # display position change over time using graphic
