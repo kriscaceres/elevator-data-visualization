@@ -63,7 +63,7 @@ def chooseAxis(x,y,z):
 
 # csvfile
 #csvfile = 'az_102mps_poweroff.csv'
-csvfile = 'vel_enc.csv'
+csvfile = 'pos_z.csv'
 csvlocation = os.path.join('data', csvfile)
 
 df = pd.read_csv(csvlocation)
@@ -75,7 +75,7 @@ print(df)
 #x_accel = df['xaccel']
 #y_accel = df['yaccel']
 ##z_accel = df['zaccel']
-vel_enc = df['vel_enc']
+#vel_enc = df['vel_enc']
 # given 3 pd Series, return the axis with the highest average
 # CHOOSE ACCEL AXIS WITH LARGEST AVERAGE
 
@@ -83,9 +83,9 @@ vel_enc = df['vel_enc']
 #accel = z_accel
 #vel_z = integ(accel - accel.mean())
 #pos_z = integ(vel_z)
-pos_enc = integ(vel_enc[57000:69600])
-
-plotUtil.movingCar(pos_enc)
+#pos_enc = integ(vel_enc[57000:69600])
+pos_z = df['pos_z']
+plotUtil.movingCar(pos_z)
 
 #print("Plotting...")
 ###plotUtil.plotData([accel, vel_z, pos_z])

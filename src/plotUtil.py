@@ -119,7 +119,7 @@ def movingCar(position):
     plt.axis('equal')
     ax = fig.add_subplot(111)
     ax.set_xlim(1.5, 4.5)
-    ax.set_ylim(-2, 3)
+    ax.set_ylim(-30, 30)
     #ax.autoscale_view(True, True, True)
     #ax.set_ylim(-4, 4)
 
@@ -130,8 +130,8 @@ def movingCar(position):
         return patch,
 
     def animate(i):
-        patch.set_width(1.5)
-        patch.set_height(2)
+        patch.set_width(0.5)
+        patch.set_height(20)
         patch.set_xy([x[i], y[i]])
         #print([x[i], y[i]])
         patch._angle = -np.rad2deg(yaw[i])
@@ -139,10 +139,12 @@ def movingCar(position):
 
     anim = animation.FuncAnimation(fig, animate,
                                     init_func=init,
-                                    frames=range(0, position.size, 2),
-                                    interval=0.001,
+                                    frames=range(0, position.size, 15),
+                                    interval=0.0001,
                                     blit=True)
-    anim.save('car_moving.mp4', fps=120)
+    plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\cacerekr\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe'
+    FFwriter=animation.FFMpegWriter(fps=360, extra_args=['-vcodec', 'libx264'])
+    #anim.save('car_moving.mp4', writer=FFwriter)
     plt.grid(True)
     plt.show()
 # display position change over time using graphic
