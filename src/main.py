@@ -39,6 +39,13 @@ def getCSV():
     result = glob.glob('*.{}'.format(extension)) # list of files, CWD = data/
     return 
 
+def floorTable():
+    # KSE magnets, KNE switches, floor levels, PHS, PHSB, PHNRU/D, PHUET 
+    # floor levels
+    '''
+    how to handle this:
+    
+    '''
 def chooseAxis(x,y,z):
     avg_x = x.nlargest().mean()
     avg_y = y.nlargest().mean()
