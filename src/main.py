@@ -1,5 +1,7 @@
 import glob  # unix style pathname pattern expansion
 import os
+from Car import Car 
+from Shaft import Shaft
 
 import matplotlib
 import matplotlib.patches as patches
@@ -63,39 +65,55 @@ def chooseAxis(x,y,z):
 # add vector to graphic with fixed positions for KSE, KNE, PHS, etc.
 
 
-#if __name__=="__main__":
+if __name__=="__main__":
 
-# get data
-#datafiles = getCSV()
+    carN = Car("S3350", 1.02, 0.80, width=2058, depth=1332, height=2362)
 
-# csvfile
-#csvfile = 'az_102mps_poweroff.csv'
-csvfile = 'pos_z.csv'
-csvlocation = os.path.join('data', csvfile)
+    BUFFER = 600
+    KNE_D = BUFFER + 500
+    PHS_1 = KNE_D + carN.height + 250
+    PHS_2 = PHS_1 + 2890
+    KNE_U = PHS_2 + 250
+    KSE_D = PHS_1 + 500
+    KSE_U = KSE_D + 50
+    SHAFT_HEAD = KNE_U + 1000
 
-df = pd.read_csv(csvlocation)
-print(df)
-# remove bad data and reformat index
-#df = cleanData(datafiles[0])
-#df = cleanData()
+    # total shaft = 6m
+    floorTableN = [("BUFFER", BUFFER), ("KNE_D", KNE_D), 
+                   ("PHS_1", PHS_1), ("PHS_2", PHS_2),
+                   ("KNE_D", KNE_D), ("KNE_U", KNE_U),
+                   ("KSE_D", KSE_D), ("KSE_U", KSE_U),
+                   ("SHAFT_HEAD", SHAFT_HEAD)]
 
-#x_accel = df['xaccel']
-#y_accel = df['yaccel']
-##z_accel = df['zaccel']
-#vel_enc = df['vel_enc']
-# given 3 pd Series, return the axis with the highest average
-# CHOOSE ACCEL AXIS WITH LARGEST AVERAGE
+    shaftN = Shaft(height=SHAFT_HEAD, floorTable=floorTableN)
+    print(shaftN.floor_table)
 
-#accel = chooseAxis(x_accel, y_accel, z_accel)
-#accel = z_accel
-#vel_z = integ(accel - accel.mean())
-#pos_z = integ(vel_z)
-#pos_enc = integ(vel_enc[57000:69600])
-pos_z = df['pos_z']
-plotUtil.movingCar(pos_z)
+    # get data
+    #datafiles = getCSV()
 
-#print("Plotting...")
-###plotUtil.plotData([accel, vel_z, pos_z])
-    
+    # csvfile
+    csvfile = 'az_102mps_poweroff.csv'
+    #csvfile = 'pos_z.csv'
+    csvlocation = os.path.join('data', csvfile)
 
-    
+    df = pd.read_csv(csvlocation)
+    print(df)
+
+    accel = df['zaccel']
+    #vel_enc = df['vel_enc']
+    # given 3 pd Series, return the axis with the highest average
+    # CHOOSE ACCEL AXIS WITH LARGEST AVERAGE
+
+    #accel = chooseAxis(x_accel, y_accel, z_accel)
+    #accel = z_accel
+    vel_z = integ(accel - accel.mean())
+    pos_z = integ(vel_z)
+    #pos_enc = integ(vel_enc[57000:69600])
+    #pos_z = df['pos_z']
+    plotUtil.movingCar(pos_z, shaftN.floor_table, carN.width, carN.height)
+
+    #print("Plotting...")
+    ###plotUtil.plotData([accel, vel_z, pos_z])
+        
+
+        

@@ -14,14 +14,17 @@ import numpy as np
 """
 
 class Shaft:
-    def __init__(self, height, floorTable, sensorTable):
+    def __init__(self, height, floorTable):
+        self.height = height
         self.floor_table = self.populateTable(height, floorTable)
-        self.sensor_table = sensorTable
-
+        
+        
     def populateTable(self, height, floorTable):
-        height = 1000 * height # height is initially in m, want mm
-        fT = np.zeros(height)
+        fT = [None] * (self.height + 1)
         for entry in floorTable:
+            print(entry)
+            print(entry[0])
+            print(entry[1])
             fT[entry[1]] = entry[0] # entry[0] = kseu, entry[1] =  5000
         return fT
 

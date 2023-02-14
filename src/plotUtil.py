@@ -110,18 +110,27 @@ def plotCont(position):
             break
 
 
-def movingCar(position):
-    x = np.linspace(2,2,position.size)
+def movingCar(position, floorTable, carWidth, carHeight):
+    shaftHeight = len(floorTable)
+    
+
+
+
+    x = np.linspace(carWidth,carWidth,position.size) # will be only one value in array, until x-accel is included
     y = position
-    yaw = np.zeros(y.size)
+    #yaw = np.zeros(y.size)
 
     fig = plt.figure()
-    plt.axis('equal')
+    #plt.axis('equal')
     ax = fig.add_subplot(111)
-    ax.set_xlim(1.5, 4.5)
-    ax.set_ylim(-30, 30)
+    ax.set_xlim(-carWidth, carWidth)
+    ax.set_ylim(-1000, shaftHeight)
     #ax.autoscale_view(True, True, True)
     #ax.set_ylim(-4, 4)
+    for index, entry in enumerate(floorTable):
+        if entry is not None:
+            ax.text((carWidth / 2) - 500, index, entry)
+    
 
     patch = patches.Rectangle((0,0), 0, 0, fc='y')
 
@@ -130,20 +139,19 @@ def movingCar(position):
         return patch,
 
     def animate(i):
-        patch.set_width(0.5)
-        patch.set_height(20)
+        patch.set_width(carWidth)
+        patch.set_height(carHeight)
         patch.set_xy([x[i], y[i]])
-        #print([x[i], y[i]])
-        patch._angle = -np.rad2deg(yaw[i])
+        #patch._angle = -np.rad2deg(yaw[i])
         return patch,
 
     anim = animation.FuncAnimation(fig, animate,
                                     init_func=init,
-                                    frames=range(0, position.size, 15),
-                                    interval=0.0001,
+                                    frames=range(0, position.size, 100),
+                                    interval=0.01,
                                     blit=True)
-    plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\cacerekr\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe'
-    FFwriter=animation.FFMpegWriter(fps=360, extra_args=['-vcodec', 'libx264'])
+    #plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\cacerekr\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe'
+    #FFwriter=animation.FFMpegWriter(fps=360, extra_args=['-vcodec', 'libx264'])
     #anim.save('car_moving.mp4', writer=FFwriter)
     plt.grid(True)
     plt.show()

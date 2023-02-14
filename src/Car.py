@@ -1,10 +1,12 @@
 class Car:
-    def __init__(self,type,velocity,accel,installation, dimensions):
+    def __init__(self,type,velocity,accel, width, depth, height):
         self.type = type
         self.velocity = velocity
         self.accel = accel
-        self.installation = installation
-        self.dimensions = dimensions
+        self.width = width
+        self.depth = depth
+        self.height = height
+        
     def __str__(self):
-        return f"Elevator Product {self.type} (Installation: {self.installation})"
+        return "Velocity: {} | Accel {} | Dimensions)".format(self.velocity, self.accel, self.dimensions)
         
