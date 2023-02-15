@@ -68,7 +68,6 @@ def chooseAxis(x,y,z):
 if __name__=="__main__":
 
     carN = Car("S3350", 1.02, 0.80, width=2058, depth=1332, height=2362)
-
     BUFFER = 600
     KNE_D = BUFFER + 500
     PHS_1 = KNE_D + carN.height + 250
@@ -107,12 +106,15 @@ if __name__=="__main__":
     #accel = chooseAxis(x_accel, y_accel, z_accel)
     #accel = z_accel
     vel_z = integ(accel - accel.mean())
-    pos_z = integ(vel_z)
+    pos_z = integ(vel_z) * 1000
+
+    """
+    The position data reports distance away from 0. Give it an initial position to get an accurate measurement.
+    """
+    pos_z = pos_z + PHS_1
     #pos_enc = integ(vel_enc[57000:69600])
     #pos_z = df['pos_z']
     plotUtil.movingCar(pos_z, shaftN.floor_table, carN.width, carN.height)
-
-    #print("Plotting...")
     ###plotUtil.plotData([accel, vel_z, pos_z])
         
 

@@ -111,25 +111,30 @@ def plotCont(position):
 
 
 def movingCar(position, floorTable, carWidth, carHeight):
-    shaftHeight = len(floorTable)
     
-
-
-
+    shaftHeight = len(floorTable)
     x = np.linspace(carWidth,carWidth,position.size) # will be only one value in array, until x-accel is included
     y = position
-    #yaw = np.zeros(y.size)
+    plt.style.use('Solarize_Light2')
 
     fig = plt.figure()
-    #plt.axis('equal')
     ax = fig.add_subplot(111)
+    ax.set_ylim(0, shaftHeight)
     ax.set_xlim(-carWidth, carWidth)
-    ax.set_ylim(-1000, shaftHeight)
-    #ax.autoscale_view(True, True, True)
-    #ax.set_ylim(-4, 4)
+    ax.grid(visible=True, which='major', color='k', linestyle=':')
+    #ax.grid(visible=True, which='minor', color='r', linestyle='-.')
+    #ax.minorticks_on()
+
+    parity = 1 # so text doesn't overlap
     for index, entry in enumerate(floorTable):
         if entry is not None:
-            ax.text((carWidth / 2) - 500, index, entry)
+            positive = parity > 0
+            ax.text(( parity * carWidth), index, entry)
+            ax.axhline(y=index, 
+                       color='b' if positive else 'r',
+                       linestyle=':' if positive else '-.', 
+                       linewidth=1.5)
+            parity *= -1
     
 
     patch = patches.Rectangle((0,0), 0, 0, fc='y')
@@ -139,21 +144,21 @@ def movingCar(position, floorTable, carWidth, carHeight):
         return patch,
 
     def animate(i):
+        print("y[i]: {}\t\t\tx[i]: {}".format(y[i], x[i]))
+        ax.set_ylim(int(y[i] - carHeight - 200), int(carHeight + y[i] + 200))
+        ax.set_xlim(-carWidth, carWidth)
         patch.set_width(carWidth)
-        patch.set_height(carHeight)
-        patch.set_xy([x[i], y[i]])
-        #patch._angle = -np.rad2deg(yaw[i])
+        patch.set_height(-carHeight)
+        patch.set_xy([-500, int(y[i])])
         return patch,
 
     anim = animation.FuncAnimation(fig, animate,
                                     init_func=init,
-                                    frames=range(0, position.size, 100),
-                                    interval=0.01,
-                                    blit=True)
+                                    frames=range(0, position.size, 50),
+                                    interval=0.0001)#,
+                                    #blit=True)
     #plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\cacerekr\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe'
     #FFwriter=animation.FFMpegWriter(fps=360, extra_args=['-vcodec', 'libx264'])
     #anim.save('car_moving.mp4', writer=FFwriter)
     plt.grid(True)
     plt.show()
-# display position change over time using graphic
-# add vector to graphic with fixed positions for KSE, KNE, PHS, etc.
